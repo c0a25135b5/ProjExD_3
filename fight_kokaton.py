@@ -174,7 +174,6 @@ def main():
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beams = []  # Beamクラスを複数扱う
     score = Score()
-    # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
     while True:
