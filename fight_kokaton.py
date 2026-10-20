@@ -3,6 +3,7 @@ import random
 import sys
 import time
 import pygame as pg
+import math
 
 
 WIDTH = 1100  # ゲームウィンドウの幅
@@ -53,6 +54,7 @@ class Bird:
         こうかとん画像Surfaceを生成する
         引数 xy：こうかとん画像の初期位置座標タプル
         """
+        self.dire = (+5, 0)
         self.img = __class__.imgs[(+5, 0)]
         self.rct: pg.Rect = self.img.get_rect()
         self.rct.center = xy
@@ -73,6 +75,8 @@ class Bird:
         引数2 screen：画面Surface
         """
         sum_mv = [0, 0]
+        if sum_mv != [0, 0]:
+            self.dire = (sum_mv[0], sum_mv[1])
         for k, mv in __class__.delta.items():
             if key_lst[k]:
                 sum_mv[0] += mv[0]
@@ -98,7 +102,10 @@ class Beam:
         self.rct = self.img.get_rect()
         self.rct.centery = bird.rct.centery  # ビームの中心縦座標 = こうかとんの中心縦座標
         self.rct.left = bird.rct.right  # ビームの左座標 = こうかとんの右座標
-        self.vx, self.vy = +5, 0
+        self.vx, self.vy = bird.dire
+        self.theta = math.atan2(-self.vy, self.vx)
+        self.degree = math.degrees(self.theta)
+        self.img = pg.transform.rotozoom(self.img, self.degree, 1.0)
 
     def update(self, screen: pg.Surface):
         """
