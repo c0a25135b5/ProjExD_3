@@ -141,16 +141,37 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Score:
+    """
+    スコア表示に関するクラス
+    """
+    def __init__(self):
+        """
+        スコアSurfaceの作成
+        引数なし
+        """
+        self.fonto = pg.font.Font(None, 50)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
+        self.rct = self.img.get_rect()
+        self.rct.center = +100, HEIGHT - 50
+
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコアを表示する文字列Surface
+        スクリーンにblitする
+        """
+        self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
+        screen.blit(self.img, self.rct)
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
-    # bomb = Bomb((255, 0, 0), 10)
-    # bombs = []
-    # for _ in range(NUM_OF_BOMBS):
-    #     bombs.append(Bomb((255, 0, 0), 10))
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
+    score = Score()
     beam = None  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
@@ -180,6 +201,7 @@ def main():
                     beam = None
                     bombs[i] = None
                     bird.change_img(6, screen)  # よろこびエフェクト
+                    score.score += 1
                     pg.display.update()                    
         bombs = [bomb for bomb in bombs if bomb is not None]  # Noneを取り除く
 
@@ -189,6 +211,7 @@ def main():
             beam.update(screen)  
         for bomb in bombs: 
             bomb.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
