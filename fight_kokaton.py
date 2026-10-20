@@ -170,7 +170,28 @@ class Explosion:
     """
     爆発エフェクトを表示するクラス
     """
-    
+    def __init__(self, life: int, bomb: Bomb):
+        """
+        爆発エフェクトSurfaceを生成
+        引数1: エフェクト表示時間
+        """
+        self.img = pg.image.load("fig/explosion.gif")
+        self.imgs = [self.img, pg.transform.flip(self.img, True, True)]
+        self.rct = self.img.get_rect()
+        self.rct = bomb.rct.center
+        self.life = life
+
+    def update(self, screen: pg.Surface):
+        """
+        時間経過で爆弾の表示が変わる
+        """
+        self.life -= 1
+
+        if self.life > 0:
+            if self.life % 2 == 0:
+                screen.blit(self.imgs[0], self.rct)
+            elif self.life % 2 != 0:
+                screen.blit(self.imgs[1], self.rct)
 
 
 def main():
@@ -180,6 +201,7 @@ def main():
     bird = Bird((300, 200))
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beams = []  # Beamクラスを複数扱う
+    explosions = []
     score = Score()
     # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
@@ -211,11 +233,14 @@ def main():
                 if beam is not None and bomb is not None and beam.rct.colliderect(bomb.rct):  # ビームと爆弾の衝突判定
                     beams[j] = None
                     bombs[i] = None
+                    explosion = Explosion(50, bomb)
+                    explosions.append(explosion)
                     bird.change_img(6, screen)  # よろこびエフェクト
                     score.score += 1
                     pg.display.update()                    
         bombs = [bomb for bomb in bombs if bomb is not None]  # Noneを取り除く
         beams = [beam for beam in beams if beam is not None and check_bound(beam.rct) == (True, True)]
+        explosions = [explosion for explosion in explosions if explosion.life > 0]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
@@ -223,6 +248,8 @@ def main():
             beam.update(screen)  
         for bomb in bombs: 
             bomb.update(screen)
+        for explosion in explosions:
+            explosion.update(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1
