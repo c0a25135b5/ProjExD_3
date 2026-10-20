@@ -186,12 +186,7 @@ class Explosion:
         時間経過で爆弾の表示が変わる
         """
         self.life -= 1
-
-        if self.life > 0:
-            if self.life % 2 == 0:
-                screen.blit(self.imgs[0], self.rct)
-            elif self.life % 2 != 0:
-                screen.blit(self.imgs[1], self.rct)
+        screen.blit(self.imgs[self.life // 10 % 2], self.rct)
 
 
 def main():
